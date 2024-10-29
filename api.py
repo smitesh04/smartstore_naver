@@ -1,4 +1,5 @@
 import json
+import urllib
 
 import requests
 from parsel import Selector
@@ -19,11 +20,21 @@ def translate_text(text, input_lang, output_lang):
     translated_text = ''.join([item[0] for item in result[0]])
     return json.dumps({'RESPONSE_STATUS': response.status_code, 'translated_text': translated_text})
 
-def deal():
+def deal(url):
     # file = open("C:/Users/Actowiz/Desktop/pagesave/smartstore_naver/6c45e6d1d6f5669b41e65d9e5b5a5de8.html", 'r', encoding='utf-8')
-    file = open("naver_html.html", 'r', encoding='utf-8')
-    data = file.read()
-    file.close()
+    # file = open("naver_html.html", 'r', encoding='utf-8')
+    # data = file.read()
+    # file.close()
+    token = "42e3e8686c3e4066a56b117cdf011af79cd986cac0e"
+    targetUrl = urllib.parse.quote(url)
+
+    response = requests.get(
+        f'http://api.scrape.do/?token={token}&geocode=kr&super=true&url={targetUrl}&forwardheaders=true&render=true',
+        # cookies=cookies,
+        # headers=headers
+    )
+
+    data = response.text
     
     response = Selector(data)
     jsn_raw = response.xpath("//script[contains(text(),'STATE__=')]/text()").get()
@@ -85,9 +96,11 @@ def deal():
     output_jsn_translated = translate_text(str(output_jsn), 'ko', 'en')
     output_jsn_translated_final = json.loads(output_jsn_translated)['translated_text']
 
+
     return output_jsn_translated_final
 
     
 if __name__ == '__main__':
-    a = deal()
+    url = 'https://smartstore.naver.com/cocorynn/products/9880451043'
+    a = deal(url)
     print()

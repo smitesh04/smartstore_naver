@@ -27,23 +27,39 @@ proxies = {
 url = 'https://smartstore.naver.com/partyshow/products/348366901'
 # url = 'https://smartstore.naver.com/dalutong/products/11032733784'
 def request(url):
-    url = "https://smartstore.naver.com/dalutong/products/9807449873"
+    # url = "https://smartstore.naver.com/dalutong/products/9807449873"
     targetUrl = urllib.parse.quote(url)
-    geocode = "il"
-    url = "http://api.scrape.do?token={}&url={}&geoCode={}&super=true&render=true&sessionId=1234".format(token,
-                                                                                                         targetUrl,
-                                                                                                         geocode)
+    import requests
 
-    payload = {}
-    headers = {
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'accept-language': 'en-US,en;q=0.9',
-        'cache-control': 'max-age=0',
-        # 'priority': 'u=0, i',
-        'user-agent': ua.random
+    cookies = {
+        '_fwb': '1480uNkSnh34uKp5O7HAoVF.1730187380015',
+        'NAC': 'O7GmBYAFi7lu',
     }
 
-    response = requests.get(url, headers=headers)
+    headers = {
+        'accept': 'application/json, text/plain, */*',
+        'accept-language': 'en-US,en;q=0.9',
+        'cache-control': 'no-cache',
+        'cookie': '_fwb=1480uNkSnh34uKp5O7HAoVF.1730187380015; NAC=O7GmBYAFi7lu',
+        'pragma': 'no-cache',
+        'priority': 'u=1, i',
+        'referer': 'https://smartstore.naver.com/cocorynn/products/6707275517',
+        'sec-ch-ua': '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+        'x-client-version': '20241024110650',
+    }
+
+    response = requests.get(
+        f'http://api.scrape.do/?token={token}&geocode=kr&super=true&url={targetUrl}&forwardheaders=true&render=true',
+        # cookies=cookies,
+        # headers=headers
+    )
+
     print()
 def drission(url):
     co = ChromiumOptions().set_proxy(proxies['http'])
@@ -64,6 +80,7 @@ def drission(url):
 
 
 if __name__ == '__main__':
-    url = 'https://smartstore.naver.com/partyshow/products/348366901'
+    # url = 'https://smartstore.naver.com/partyshow/products/348366901'
+    url = 'https://smartstore.naver.com/cocorynn/products/9880451043'
     # drission(url)
     request(url)
