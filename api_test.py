@@ -3,8 +3,8 @@ import urllib
 from fake_useragent import UserAgent
 import requests
 from parsel import Selector
-ua = UserAgent()
 
+ua = UserAgent()
 
 def translate_text(text, input_lang, output_lang):
     """Translates given text using the Google Translate API."""
@@ -21,16 +21,10 @@ def translate_text(text, input_lang, output_lang):
     translated_text = ''.join([item[0] for item in result[0]])
     return json.dumps({'RESPONSE_STATUS': response.status_code, 'translated_text': translated_text})
 
+
 def deal(url):
-    # file = open("C:/Users/Actowiz/Desktop/pagesave/smartstore_naver/6c45e6d1d6f5669b41e65d9e5b5a5de8.html", 'r', encoding='utf-8')
-    # file = open("naver_html.html", 'r', encoding='utf-8')
-    # data = file.read()
-    # file.close()
     token = "42e3e8686c3e4066a56b117cdf011af79cd986cac0e"
     scraper_token = "af6554d818a9a97545ecf42a0b335f36"
-
-
-
     targetUrl = urllib.parse.quote(url)
     request_url = url
     if 'smartstore.naver.com' in url:
@@ -44,31 +38,15 @@ def deal(url):
         'accept-language': 'en-US,en;q=0.9',
         'cache-control': 'no-cache',
         'cookie': '_fwb=1480uNkSnh34uKp5O7HAoVF.1730187380015; NAC=O7GmBYAFi7lu',
-        'pragma': 'no-cache',
-        'priority': 'u=1, i',
-        'referer': 'https://smartstore.naver.com/cocorynn/products/6707275517',
-        'sec-ch-ua': '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"macOS"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
-        'x-client-version': '20241024110650'
+        'user-agent': ua.random
     }
 
     response = requests.get(
-        url=request_url
-        ,
-        # cookies=cookies,
-        headers=headers
+        url=request_url, headers=headers
     )
-
-    # response = requests.get(url)
-
     data = response.text
-
     response = Selector(data)
+
     jsn_raw = response.xpath("//script[contains(text(),'STATE__=')]/text()").get()
     jsn_raw = jsn_raw.replace("window.__PRELOADED_STATE__=", "")
     jsn_loaded = json.loads(jsn_raw)
@@ -78,8 +56,10 @@ def deal(url):
 
     name = product_jsn['name']
     sale_price = product_jsn['salePrice']
-    try:discounted_sale_price = product_jsn['benefitsView']['discountedSalePrice']
-    except:discounted_sale_price = 'None'
+    try:
+        discounted_sale_price = product_jsn['benefitsView']['discountedSalePrice']
+    except:
+        discounted_sale_price = 'None'
     product_delivery_info = product_jsn['productDeliveryInfo']
     images = product_jsn['productImages']
     images_list = []
@@ -87,12 +67,18 @@ def deal(url):
         for img_dict in images:
             images_list.append(img_dict['url'])
     benefits_policy = product_jsn['benefitsPolicy']
-    try:simple_options = product_jsn['simpleOptions']
-    except:simple_options = "None"
-    try:option_combinations = product_jsn['optionCombinations']
-    except:option_combinations = "None"
-    try:options = product_jsn['options']
-    except:options = "None"
+    try:
+        simple_options = product_jsn['simpleOptions']
+    except:
+        simple_options = "None"
+    try:
+        option_combinations = product_jsn['optionCombinations']
+    except:
+        option_combinations = "None"
+    try:
+        options = product_jsn['options']
+    except:
+        options = "None"
     supplements = product_jsn['supplements']
     product_id = product_jsn['id']
     error_view_message = "None"
@@ -129,33 +115,59 @@ def deal(url):
 
     coupon_response = coupon(product_no, channel_uid, category_id)
     coupon_dict = {}
-    try:coupon_jsn = json.loads(coupon_response)
-    except:coupon_jsn = ''
+    try:
+        coupon_jsn = json.loads(coupon_response)
+    except:
+        coupon_jsn = ''
     if coupon_jsn:
-        try:benefit_value = coupon_jsn['basicBenefits'][0]['benefitValue']
-        except:benefit_value = "None"
-        try:max_discount_amount = coupon_jsn['sortedHomeBenefits'][0]['maxDiscountAmount']
-        except:max_discount_amount = "None"
-        try:customer_manage_benefit_policy_no = coupon_jsn['basicBenefits'][0]['customerManageBenefitPolicyNo']
-        except:customer_manage_benefit_policy_no = "None"
-        try:coupon_kind_type = coupon_jsn['basicBenefits'][0]['couponKindType']
-        except:coupon_kind_type = "None"
-        try:coupon_name = coupon_jsn['basicBenefits'][0]['benefitPolicyName']
-        except:coupon_name = "None"
-        try:min_order_amount = coupon_jsn['basicBenefits'][0]['minOrderAmount']
-        except:min_order_amount = "None"
-        try:benefit_unit_type = coupon_jsn['sortedHomeBenefits'][0]['benefitUnitType']
-        except:benefit_unit_type = "None"
-        # try:discount_type = "" #todo
-        # except:discount_type = "None"
-        # try:discount_value = "" #todo
-        # except:discount_value = "None"
-        try:validity_day = coupon_jsn['sortedHomeBenefits'][0]['validityDay']
-        except:validity_day = "None"
-        try:benefit_start_date = coupon_jsn['sortedHomeBenefits'][0]['benefitStartDate']
-        except:benefit_start_date = "None"
-        try:benefit_end_date = coupon_jsn['sortedHomeBenefits'][0]['benefitEndDate']
-        except:benefit_end_date = "None"
+        try:
+            benefit_value = coupon_jsn['basicBenefits'][0]['benefitValue']
+        except:
+            benefit_value = "None"
+        try:
+            max_discount_amount = coupon_jsn['sortedHomeBenefits'][0]['maxDiscountAmount']
+        except:
+            max_discount_amount = "None"
+        try:
+            customer_manage_benefit_policy_no = coupon_jsn['basicBenefits'][0]['customerManageBenefitPolicyNo']
+        except:
+            customer_manage_benefit_policy_no = "None"
+        try:
+            coupon_kind_type = coupon_jsn['basicBenefits'][0]['couponKindType']
+        except:
+            coupon_kind_type = "None"
+        try:
+            coupon_name = coupon_jsn['basicBenefits'][0]['benefitPolicyName']
+        except:
+            coupon_name = "None"
+        try:
+            min_order_amount = coupon_jsn['basicBenefits'][0]['minOrderAmount']
+        except:
+            min_order_amount = "None"
+        try:
+            benefit_unit_type = coupon_jsn['sortedHomeBenefits'][0]['benefitUnitType']
+        except:
+            benefit_unit_type = "None"
+        try:
+            discount_type = ""  # todo
+        except:
+            discount_type = "None"
+        try:
+            discount_value = ""  # todo
+        except:
+            discount_value = "None"
+        try:
+            validity_day = coupon_jsn['sortedHomeBenefits'][0]['validityDay']
+        except:
+            validity_day = "None"
+        try:
+            benefit_start_date = coupon_jsn['sortedHomeBenefits'][0]['benefitStartDate']
+        except:
+            benefit_start_date = "None"
+        try:
+            benefit_end_date = coupon_jsn['sortedHomeBenefits'][0]['benefitEndDate']
+        except:
+            benefit_end_date = "None"
         coupon_dict['benefitValue'] = benefit_value
         coupon_dict['maxDiscountAmount'] = max_discount_amount
         coupon_dict['customerManageBenefitPolicyNo'] = customer_manage_benefit_policy_no
@@ -163,58 +175,17 @@ def deal(url):
         coupon_dict['coupon_name'] = coupon_name
         coupon_dict['minOrderAmount'] = min_order_amount
         coupon_dict['benefitUnitType'] = benefit_unit_type
-        # coupon_dict['discount_type'] = discount_type
-        # coupon_dict['discount_value'] = discount_value
+        coupon_dict['discount_type'] = discount_type
+        coupon_dict['discount_value'] = discount_value
         coupon_dict['validityDay'] = validity_day
         coupon_dict['benefitStartDate'] = benefit_start_date
         coupon_dict['benefitEndDate'] = benefit_end_date
-
     output_jsn['coupon'] = coupon_dict
-    # output_jsn_translated = {}
 
-    def translate_output_jsn(output_jsn, input_lang='ko', output_lang='en'):
-        output_jsn_translated = {}
+    output_jsn_translated = translate_text(str(output_jsn), 'ko', 'en')
+    output_jsn_translated_final = json.loads(output_jsn_translated)['translated_text'].replace(' ', '')
 
-        for key, value in output_jsn.items():
-            print(key)
-            if isinstance(value, str):  # If the value is a string
-                value_translated = translate_text(value, input_lang, output_lang)
-                translated = json.loads(value_translated)
-                output_jsn_translated[key] = translated['translated_text'] if translated[
-                                                                                  'RESPONSE_STATUS'] == 200 else value
-
-            elif isinstance(value, list):  # If the value is a list
-                list_translated = []
-                for list_item in value:
-                    if isinstance(list_item, str):  # Translate string items in the list
-                        value_translated = translate_text(list_item, input_lang, output_lang)
-                        translated = json.loads(value_translated)
-                        list_translated.append(
-                            translated['translated_text'] if translated['RESPONSE_STATUS'] == 200 else list_item)
-                    elif isinstance(list_item, dict):  # If the item is a dictionary, recurse
-                        list_translated.append(translate_output_jsn(list_item, input_lang, output_lang))
-                    else:
-                        list_translated.append(list_item)  # Non-string items are kept as is
-                output_jsn_translated[key] = list_translated
-
-            elif isinstance(value, dict):  # If the value is a dictionary
-                output_jsn_translated[key] = translate_output_jsn(value, input_lang, output_lang)  # Recursive call
-
-            else:
-                output_jsn_translated[key] = value
-
-        return output_jsn_translated
-
-    # Usage example:
-    output_jsn_translated = translate_output_jsn(output_jsn)
-
-    # output_jsn_translated = translate_text(str(output_jsn), 'ko', 'en')
-    # output_jsn_translated_final = json.loads(output_jsn_translated)['translated_text'].replace(' ', '')
-    # output_jsn_loaded = json.loads((output_jsn_translated_final))
-
-
-    return output_jsn_translated
-
+    return output_jsn_translated_final
 
 def coupon(product_no, channel_uid, category_id):
     token = "42e3e8686c3e4066a56b117cdf011af79cd986cac0e"
@@ -233,10 +204,9 @@ def coupon(product_no, channel_uid, category_id):
         'cookie': '_fwb=1480uNkSnh34uKp5O7HAoVF.1730187380015; NAC=O7GmBYAFi7lu',
         'user-agent': ua.random,
     }
-
-
     response = requests.get(request_url, headers=headers)
     return response.text
+
 
 if __name__ == '__main__':
     # url = 'https://smartstore.naver.com/foodline7008/products/6664578952'
